@@ -58,7 +58,6 @@
             this.DoubleBuffered = true;
             this.Name = "UserControl1";
             this.Size = new System.Drawing.Size(303, 319);
-            this.Load += new System.EventHandler(this.UserControl1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.UserControl1_Paint);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.UserControl1_KeyDown);
             this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.UserControl1_PreviewKeyDown);

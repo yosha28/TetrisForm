@@ -17,17 +17,20 @@ namespace ControlLibrary
     {
         Point[] figurePoints = new Point[4];
         Point[] nextPoints = new Point[4];
-        const int width = 12, height = 21, k = 15;   
+        const int width = 12, height = 21, k = 15;    
         int gameStatus;//создание новой,падение,конец игры/Enum?
         Point center = new Point();
         Point centerNext = new Point(15, 3);
         Tetris tetris;
+        float scaleUnit;
+        int sizeRect;
 
         public UserControl1()
         {
             InitializeComponent();
             StartGame();
             timer1.Stop();
+
         }
         private void StartGame()
         {
@@ -38,9 +41,14 @@ namespace ControlLibrary
             nextPoints = tetris.inext.Create(centerNext, tetris.inext.number);
             figurePoints = tetris.ifigure.Create(Tetris.center, tetris.ifigure.number);
             tetris.flag = 1;
+
         }
         private void UserControl1_Paint(object sender, PaintEventArgs e)
         {
+            scaleUnit = ClientRectangle.Width > ClientRectangle.Height ?
+                 ClientRectangle.Height / 317F : ClientRectangle.Width / 295F;
+            sizeRect =(int)(scaleUnit * k);
+
             Graphics gr = e.Graphics;
 
             gr.Clear(Color.LightGray);
@@ -52,31 +60,31 @@ namespace ControlLibrary
                     {
                         if (x < 4)//фигуры
                         {
-                            gr.FillRectangle(Brushes.Red, nextPoints[x].X * k, nextPoints[x].Y * k, k, k);
-                            gr.DrawRectangle(Pens.Black, nextPoints[x].X * k, nextPoints[x].Y * k, k, k);
-                            gr.FillRectangle(Brushes.Red, figurePoints[x].X * k, figurePoints[x].Y * k, k, k);
-                            gr.DrawRectangle(Pens.Black, figurePoints[x].X * k, figurePoints[x].Y * k, k, k);
+                            gr.FillRectangle(Brushes.Red, nextPoints[x].X * sizeRect, nextPoints[x].Y * sizeRect, sizeRect, sizeRect);
+                            gr.DrawRectangle(Pens.Black, nextPoints[x].X * sizeRect, nextPoints[x].Y * sizeRect, sizeRect, sizeRect);
+                            gr.FillRectangle(Brushes.Red, figurePoints[x].X * sizeRect, figurePoints[x].Y * sizeRect, sizeRect, sizeRect);
+                            gr.DrawRectangle(Pens.Black, figurePoints[x].X * sizeRect, figurePoints[x].Y * sizeRect, sizeRect, sizeRect);
                         }
                         if (tetris.field[x, y] == 1)//поле
                         {
-                            gr.FillRectangle(Brushes.Blue, (x + 1) * k, y * k, k, k);
-                            gr.DrawRectangle(Pens.Black, (x + 1) * k, y * k, k, k);
+                            gr.FillRectangle(Brushes.Blue, (x + 1) * sizeRect, y * sizeRect, sizeRect, sizeRect);
+                            gr.DrawRectangle(Pens.Black, (x + 1) * sizeRect, y * sizeRect, sizeRect, sizeRect);
                         }
                     }
                     if (y == height - 1 || x == 0 || x == width - 1)//границы
                     {
-                        gr.FillRectangle(Brushes.DarkGray, x * k, y * k, k, k);
-                        gr.DrawRectangle(Pens.Black, x * k, y * k, k, k);
+                        gr.FillRectangle(Brushes.DarkGray, x * sizeRect, y * sizeRect, sizeRect, sizeRect);
+                        gr.DrawRectangle(Pens.Black, x * sizeRect, y * sizeRect, sizeRect, sizeRect);
                     }
                 }
 
             GraphicText(gr, "Next Figure", 3, Brushes.Black);
-            GraphicText(gr, "Score", 6 * k, Brushes.Black);
-            GraphicText(gr, tetris.score.ToString(), 7 * k, Brushes.Red);
-            GraphicText(gr, "Level", 9 * k, Brushes.Black);
-            GraphicText(gr, tetris.level.ToString(), 10 * k, Brushes.Red);
-            GraphicText(gr, "Record", 12 * k, Brushes.Black);
-            GraphicText(gr, tetris.ReadRecord(), 13 * k, Brushes.Red);
+            GraphicText(gr, "Score", 6 * sizeRect, Brushes.Black);
+            GraphicText(gr, tetris.score.ToString(), 7 * sizeRect, Brushes.Red);
+            GraphicText(gr, "Level", 9 * sizeRect, Brushes.Black);
+            GraphicText(gr, tetris.level.ToString(), 10 * sizeRect, Brushes.Red);
+            GraphicText(gr, "Record", 12 * sizeRect, Brushes.Black);
+            GraphicText(gr, tetris.ReadRecord(), 13 * sizeRect, Brushes.Red);
             if (gameStatus == 2)
             {
                 timer1.Stop();
@@ -95,10 +103,9 @@ namespace ControlLibrary
         }
         private void GraphicText(Graphics gr, string text, int y, Brush brush)
         {
-            Font = new Font(Font.Name, 12);
-            PointF point = new PointF((width + 1) * k, y);
+            Font = new Font(Font.Name, 12* scaleUnit);
+            PointF point = new PointF((width + 1) * sizeRect, y);
             gr.DrawString(text, Font, brush, point);
-
         }
 
         private void UserControl1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -109,21 +116,16 @@ namespace ControlLibrary
                 case Keys.Up:
                 case Keys.Left:
                 case Keys.Right:
-                //  case Keys.Enter:
                 case Keys.Pause:
                     e.IsInputKey = true;
                     break;
             }
         }
 
-        private void UserControl1_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             timer1.Start();
+
             button1.Visible = false;
         }
 

@@ -158,7 +158,8 @@ namespace TetrisGame
             string path = dir + "Record.txt";    
             if(!File.Exists(path))
             {
-                SaveRecord();
+                File.Create(path);
+              //  SaveRecord();
             }         
             using (StreamReader sr = File.OpenText(path))
             {

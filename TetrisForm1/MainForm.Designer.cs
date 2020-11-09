@@ -33,12 +33,13 @@
             // 
             // userControl1
             // 
+            this.userControl1.AutoSize = true;
             this.userControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.userControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.userControl1.Location = new System.Drawing.Point(0, 0);
             this.userControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.userControl1.Name = "userControl1";
-            this.userControl1.Size = new System.Drawing.Size(295, 316);
+            this.userControl1.Size = new System.Drawing.Size(284, 316);
             this.userControl1.TabIndex = 0;
             // 
             // MainForm
@@ -46,7 +47,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(295, 316);
+            this.ClientSize = new System.Drawing.Size(284, 316);
             this.Controls.Add(this.userControl1);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Times New Roman", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -54,8 +55,8 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Tetris";
-            this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
