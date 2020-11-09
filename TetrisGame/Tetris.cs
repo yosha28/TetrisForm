@@ -9,21 +9,15 @@ using System.IO;
 
 namespace TetrisGame
 {
-    //  public enum FigureName { L,J,T,Z,S,O,I}
     public class Tetris
     {
         public int[,] field = new int[10, 20];
         public static Point center = new Point(5, 0);
         public IFigure ifigure;
         public IFigure inext;
-        public int score;
-        public int record;
-        public int time = 2000;
-        public int level = 1;
-        public int amtFigure;//счетчик фигур для изменения уровней
-        public int flag = 0;//для создания новой и след.фигур
-        Point[] figurePoints = new Point[4];
-        Point[] nextPoints = new Point[4];
+        public int score, record, time, level, amtFigure, flag;   
+      //  amtFigure счетчик фигур для изменения уровней
+      //  flag для создания новой и след.фигур  
         public Tetris()
         {
             for (int y = 0; y < 20; y++)
@@ -31,14 +25,15 @@ namespace TetrisGame
                 {
                     field[x, y] = 0;
                 }
+            time = 2000;
+            level = 1;
+            flag = 0;
         }
         public IFigure AssortyFigure()
         {
             Random round = new Random();
             int num = round.Next(1, 5);
-            IFigure setFigure = null;
-            //  int form = round.Next(1, 8);
-            //   int form = 4;
+            IFigure setFigure = null; 
             int form = round.Next(1, 8);
 
             switch (form)
@@ -60,11 +55,11 @@ namespace TetrisGame
                 for (int y = 0; y < 20; y++)
                     for (int x = 0; x < 10; x++)
                     {
-                        if (field[x, y] == 1)
+                        if (field[x, y] == 1)//в поле врезались
                         {
                             if (figure[k].X - 1 == x && figure[k].Y - center.Y == y) return false;
                         }
-                        else
+                        else//в пол и стены
                         {
                             if (figure[k].Y >= 20 || figure[k].X >= 11 || figure[k].X <= 0) return false;
                         }
@@ -128,6 +123,7 @@ namespace TetrisGame
             }
 
         }
+      
         public void NewLevel()
         {
             if (level < 10)
@@ -159,8 +155,7 @@ namespace TetrisGame
         public string ReadRecord()
         {
             DirectoryInfo dir = new DirectoryInfo(".");
-            string path = dir + "Record.txt";
-        //    int record = 0;
+            string path = dir + "Record.txt";    
             if(!File.Exists(path))
             {
                 SaveRecord();

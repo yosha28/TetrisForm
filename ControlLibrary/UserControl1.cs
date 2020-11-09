@@ -17,19 +17,16 @@ namespace ControlLibrary
     {
         Point[] figurePoints = new Point[4];
         Point[] nextPoints = new Point[4];
-        public const int width = 12, height = 21, k = 15;
-        public Graphics gr;
-        int gameStatus;
+        const int width = 12, height = 21, k = 15;   
+        int gameStatus;//создание новой,падение,конец игры/Enum?
         Point center = new Point();
         Point centerNext = new Point(15, 3);
         Tetris tetris;
-      
+
         public UserControl1()
         {
             InitializeComponent();
-
             StartGame();
-          
             timer1.Stop();
         }
         private void StartGame()
@@ -51,34 +48,30 @@ namespace ControlLibrary
             for (int y = 0; y < height; y++)//контуры стакана
                 for (int x = 0; x < width; x++)
                 {
-                    if (y == height - 1 || x == 0 || x == width - 1)
+                    if (y < 20 && x < 10)
+                    {
+                        if (x < 4)//фигуры
+                        {
+                            gr.FillRectangle(Brushes.Red, nextPoints[x].X * k, nextPoints[x].Y * k, k, k);
+                            gr.DrawRectangle(Pens.Black, nextPoints[x].X * k, nextPoints[x].Y * k, k, k);
+                            gr.FillRectangle(Brushes.Red, figurePoints[x].X * k, figurePoints[x].Y * k, k, k);
+                            gr.DrawRectangle(Pens.Black, figurePoints[x].X * k, figurePoints[x].Y * k, k, k);
+                        }
+                        if (tetris.field[x, y] == 1)//поле
+                        {
+                            gr.FillRectangle(Brushes.Blue, (x + 1) * k, y * k, k, k);
+                            gr.DrawRectangle(Pens.Black, (x + 1) * k, y * k, k, k);
+                        }
+                    }
+                    if (y == height - 1 || x == 0 || x == width - 1)//границы
                     {
                         gr.FillRectangle(Brushes.DarkGray, x * k, y * k, k, k);
                         gr.DrawRectangle(Pens.Black, x * k, y * k, k, k);
                     }
                 }
 
-            for (int y = 0; y < 20; y++)//фигуры и поле
-                for (int x = 0; x < 10; x++)
-                {
-                    if (tetris.field[x, y] == 1)
-                    {
-                        gr.FillRectangle(Brushes.Blue, (x + 1) * k, y * k, k, k);
-                        gr.DrawRectangle(Pens.Black, (x + 1) * k, y * k, k, k);
-                    }
-                   
-                }
-
-            for (int i = 0; i < 4; i++)
-            {
-                gr.FillRectangle(Brushes.Red, nextPoints[i].X * k, nextPoints[i].Y * k, k, k);
-                gr.DrawRectangle(Pens.Black, nextPoints[i].X * k, nextPoints[i].Y * k, k, k);
-                gr.FillRectangle(Brushes.Red, figurePoints[i].X * k, figurePoints[i].Y * k, k, k);
-                gr.DrawRectangle(Pens.Black, figurePoints[i].X * k, figurePoints[i].Y * k, k, k);
-            }
-        
-            GraphicText(gr,"Next Figure", 3, Brushes.Black);
-            GraphicText(gr, "Score", 6*k, Brushes.Black);
+            GraphicText(gr, "Next Figure", 3, Brushes.Black);
+            GraphicText(gr, "Score", 6 * k, Brushes.Black);
             GraphicText(gr, tetris.score.ToString(), 7 * k, Brushes.Red);
             GraphicText(gr, "Level", 9 * k, Brushes.Black);
             GraphicText(gr, tetris.level.ToString(), 10 * k, Brushes.Red);
@@ -89,21 +82,18 @@ namespace ControlLibrary
                 timer1.Stop();
                 tetris.SaveRecord();
                 FormGameOver gameOver = new FormGameOver();
-               
+
                 gameOver.ShowDialog();
 
-              if(gameOver.DialogResult==DialogResult.OK)
+                if (gameOver.DialogResult == DialogResult.OK)
                 {
                     StartGame();
                     timer1.Start();
                     Invalidate();
-
                 }
-              
             }
-
         }
-        private void GraphicText(Graphics gr,string text,int y,Brush brush)
+        private void GraphicText(Graphics gr, string text, int y, Brush brush)
         {
             Font = new Font(Font.Name, 12);
             PointF point = new PointF((width + 1) * k, y);
@@ -138,7 +128,7 @@ namespace ControlLibrary
         }
 
         private void timer1_Tick(object sender, EventArgs e)
-        {       
+        {
             timer1.Interval = tetris.time;
             if (gameStatus == 1)//свободное падение
             {
@@ -148,41 +138,31 @@ namespace ControlLibrary
                 {
                     center.Y--;
                     figurePoints = tetris.ifigure.Create(center, tetris.ifigure.number);
-                    for (int i = 0; i < 4; i++)
-                    {
-                        tetris.field[figurePoints[i].X - 1, figurePoints[i].Y] = 1;
-
-                    }
-                    tetris.DeleteLinesScore();
-                    tetris.CreateNextNewFigure();
-                    figurePoints = tetris.ifigure.Create(Tetris.center, tetris.ifigure.number);
-                    nextPoints = tetris.inext.Create(centerNext, tetris.inext.number);
-                    center = Tetris.center;
-                    gameStatus = 1;
-
-                    //  gameStatus = 2;
+                    FillingField();                 
                     Invalidate();
                 }
             }
             else if (gameStatus == 0)//нужно создавать новую фигуру и сохранять в поле старую фигуру.
             {
-                for (int i = 0; i < 4; i++)
-                {
-                    tetris.field[figurePoints[i].X - 1, figurePoints[i].Y] = 1;
-
-                }
-                tetris.DeleteLinesScore();
-                tetris.CreateNextNewFigure();
-                figurePoints = tetris.ifigure.Create(Tetris.center, tetris.ifigure.number);
-                nextPoints = tetris.inext.Create(centerNext, tetris.inext.number);
-                center = Tetris.center;
-                gameStatus = 1;
-                if (!tetris.TouchFieldOrFloor(figurePoints)) gameStatus = 2;
- 
+                FillingField();             
+                if (!tetris.TouchFieldOrFloor(figurePoints)) gameStatus = 2;//уперлась в поле на старте
             }
             Invalidate();
         }
+        private void FillingField()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                tetris.field[figurePoints[i].X - 1, figurePoints[i].Y] = 1;
 
+            }
+            tetris.DeleteLinesScore();
+            tetris.CreateNextNewFigure();
+            figurePoints = tetris.ifigure.Create(Tetris.center, tetris.ifigure.number);
+            nextPoints = tetris.inext.Create(centerNext, tetris.inext.number);
+            center = Tetris.center;
+            gameStatus = 1;
+        }
         private void UserControl1_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -240,10 +220,7 @@ namespace ControlLibrary
                     timer1.Stop();
                     button1.Visible = true;
                     button1.Text = "Continue Game";
-
                     break;
-
-
             }
         }
 
