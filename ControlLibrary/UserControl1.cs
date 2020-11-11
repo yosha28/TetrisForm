@@ -24,7 +24,7 @@ namespace ControlLibrary
         Tetris tetris;
         float scaleUnit;
         int sizeRect;
-
+     
         public UserControl1()
         {
             InitializeComponent();
@@ -83,8 +83,9 @@ namespace ControlLibrary
             GraphicText(gr, tetris.score.ToString(), 7 * sizeRect, Brushes.Red);
             GraphicText(gr, "Level", 9 * sizeRect, Brushes.Black);
             GraphicText(gr, tetris.level.ToString(), 10 * sizeRect, Brushes.Red);
-            GraphicText(gr, "Record", 12 * sizeRect, Brushes.Black);
-            GraphicText(gr, tetris.ReadRecord(), 13 * sizeRect, Brushes.Red);
+            GraphicText(gr, "Record", 12 * sizeRect, Brushes.Black);        
+          GraphicText(gr, tetris.ReadRecord(), 13 * sizeRect, Brushes.Red);
+
             if (gameStatus == 2)
             {
                 timer1.Stop();
@@ -98,6 +99,12 @@ namespace ControlLibrary
                     StartGame();
                     timer1.Start();
                     Invalidate();
+                }
+                if (gameOver.DialogResult == DialogResult.Cancel)
+                {
+                    Form tmp = this.FindForm();
+                    tmp.Close();
+                    tmp.Dispose();
                 }
             }
         }
@@ -140,14 +147,43 @@ namespace ControlLibrary
                 {
                     center.Y--;
                     figurePoints = tetris.ifigure.Create(center, tetris.ifigure.number);
-                    FillingField();                 
+                    for (int i = 0; i < 4; i++)
+                    {
+                        tetris.field[figurePoints[i].X - 1, figurePoints[i].Y] = 1;
+
+                    }
+                    gameStatus = 0;
+                 //   FillingField();
                     Invalidate();
                 }
             }
             else if (gameStatus == 0)//нужно создавать новую фигуру и сохранять в поле старую фигуру.
             {
-                FillingField();             
-                if (!tetris.TouchFieldOrFloor(figurePoints)) gameStatus = 2;//уперлась в поле на старте
+                // FillingField();
+                for (int i = 0; i < 4; i++)
+                {
+                    tetris.field[figurePoints[i].X - 1, figurePoints[i].Y] = 1;
+
+                }
+                tetris.DeleteLinesScore();
+                tetris.CreateNextNewFigure();
+                figurePoints = tetris.ifigure.Create(Tetris.center, tetris.ifigure.number);
+                nextPoints = tetris.inext.Create(centerNext, tetris.inext.number);
+                center = Tetris.center;
+                gameStatus = 1;
+                if (!tetris.TouchFieldOrFloor(figurePoints))
+                {
+                    center.Y--;
+                    figurePoints = tetris.ifigure.Create(center, tetris.ifigure.number);
+                    for (int i = 0; i < 4; i++)
+                    {
+                        tetris.field[figurePoints[i].X - 1, figurePoints[i].Y] = 1;
+
+                    }
+                    gameStatus = 2;//уперлась в поле на старте
+
+                }
+
             }
             Invalidate();
         }
@@ -163,7 +199,7 @@ namespace ControlLibrary
             figurePoints = tetris.ifigure.Create(Tetris.center, tetris.ifigure.number);
             nextPoints = tetris.inext.Create(centerNext, tetris.inext.number);
             center = Tetris.center;
-            gameStatus = 1;
+         //  gameStatus = 1;
         }
         private void UserControl1_KeyDown(object sender, KeyEventArgs e)
         {
@@ -210,10 +246,11 @@ namespace ControlLibrary
                     {
                         center.Y++;
                         figurePoints = tetris.ifigure.Create(center, tetris.ifigure.number);
+                        gameStatus = 1;
                     }
                     center.Y--;
                     figurePoints = tetris.ifigure.Create(center, tetris.ifigure.number);
-
+                 
                     gameStatus = 0;
                     Invalidate();
                     break;

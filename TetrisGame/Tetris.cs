@@ -25,7 +25,7 @@ namespace TetrisGame
                 {
                     field[x, y] = 0;
                 }
-            time = 2000;
+            time = 2000;//2000
             level = 1;
             flag = 0;
         }
@@ -67,7 +67,7 @@ namespace TetrisGame
             return true;
         }
         public void CreateNextNewFigure()
-        {
+        {         
             if (flag == 0)
             {
                 ifigure = AssortyFigure();
@@ -116,7 +116,7 @@ namespace TetrisGame
             field = tmpField;
 
             amtFigure++;
-            if (amtFigure > 2)
+            if (amtFigure > 2)//быстрый рост уровней для проверки
             {
                 NewLevel();
                 amtFigure = 0;
@@ -155,19 +155,25 @@ namespace TetrisGame
         public string ReadRecord()
         {
             DirectoryInfo dir = new DirectoryInfo(".");
-            string path = dir + "Record.txt";    
-            if(!File.Exists(path))
+            string path = dir + "Record.txt";
+
+            if (!File.Exists(path))
             {
-                File.Create(path);
-              //  SaveRecord();
-            }         
-            using (StreamReader sr = File.OpenText(path))
-            {
-                record = int.Parse(sr.ReadToEnd());
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                    sw.Write($"{record} ");
+                }
                 return record.ToString();
             }
-
-        }
+            else
+            {
+                using (StreamReader sr = File.OpenText(path))
+                {
+                    record = int.Parse(sr.ReadToEnd());
+                    return record.ToString();
+                }
+            }
+    }
 
     }
 }
